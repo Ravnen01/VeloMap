@@ -1,5 +1,6 @@
 package lpiem.lecomte.com.velomap;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -119,6 +120,19 @@ public class TestJson extends ActionBarActivity {
             ListView listView=(ListView)findViewById(R.id.listView);
             listView.setAdapter(new JsonListAdapter());
 
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    Intent i=new Intent(getApplicationContext(),MapsActivity.class);
+                    Bundle b=new Bundle();
+                    b.putString("contract",listContract.get(position).getName());
+                    i.putExtras(b);
+
+                    startActivity(i);
+
+                }
+            });
             
         }
     }
