@@ -79,13 +79,7 @@ public class AsyncStation extends AsyncTask {
         for(int i=0;i<listStation.size();i++){
             createMarker(listStation.get(i));
         }
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-                return true;
-            }
-        });
+
 
 
     }
@@ -93,7 +87,7 @@ public class AsyncStation extends AsyncTask {
         LatLng position=new LatLng(station.getLat(),station.getLng());
         mMap.addMarker(new MarkerOptions()
                 .title(station.getName())
-                .snippet(station.getAdress())
+                .snippet(station.getAdress()+"\nPace libre:"+station.getAvailableBikeStands()+"\nVelo libre:"+station.getAvailableBikes())
                 .position(position));
     }
 }

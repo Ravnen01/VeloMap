@@ -1,5 +1,6 @@
 package lpiem.lecomte.com.velomap;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -13,6 +14,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private String contract;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +24,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        Intent i=getIntent();
+        contract=i.getStringExtra("contract");
     }
 
 
@@ -44,8 +48,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bourg, 13));
         mMap.setMyLocationEnabled(true);
 
-        AsyncStation asyncStation=new AsyncStation("Lyon",mMap);
+        AsyncStation asyncStation=new AsyncStation(contract,mMap);
         asyncStation.execute();
+
+        /*LatLng myPosition = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPosition,13));*/
 
 
     }
