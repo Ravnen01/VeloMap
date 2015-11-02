@@ -9,10 +9,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.model.GeocodingResult;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private String contract;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        contract=getIntent().getStringExtra("contract");
+
+
     }
 
 
@@ -38,13 +45,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng bourg = new LatLng(46.205120, 5.225370);
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bourg, 13));
         mMap.setMyLocationEnabled(true);
+        GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyB8f9QawVQLXqqZMQcIxihQCYSkIxGxzXY");
+        try {
+            GeocodingResult[] results =  GeocodingApi.geocode(context, contract).await();
+            LatLng locContract=new LatLng(results[0].geometry.location.lat,results[0].geometry.location.lng);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locContract,10));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        AsyncStation asyncStation=new AsyncStation("Lyon",mMap);
+        AsyncStation asyncStation=new AsyncStation(contract,mMap);
         asyncStation.execute();
 
 
