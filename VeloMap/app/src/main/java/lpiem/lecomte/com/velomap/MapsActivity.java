@@ -56,7 +56,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
-        AsyncStation asyncStation=new AsyncStation(contract,mMap);
+        AsyncStation asyncStation=new AsyncStation(contract,mMap,getApplicationContext());
         asyncStation.execute();
 
 
