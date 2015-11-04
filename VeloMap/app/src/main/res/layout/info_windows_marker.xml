@@ -10,7 +10,8 @@
         android:text="Large Text"
         android:id="@+id/tvNomStation"
         android:layout_gravity="center_horizontal"
-        android:textColor="@color/wallet_primary_text_holo_light"/>
+        android:textColor="@color/wallet_primary_text_holo_light"
+        android:textSize="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"

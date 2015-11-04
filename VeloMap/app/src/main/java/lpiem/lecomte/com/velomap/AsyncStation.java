@@ -6,22 +6,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdate;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
+
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
+
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.model.GeocodingResult;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +33,8 @@ import java.util.ArrayList;
 import javax.net.ssl.HttpsURLConnection;
 
 import lpiem.lecomte.com.velomap.Model.ClusterMarker;
-import lpiem.lecomte.com.velomap.Model.Contract;
+
+import lpiem.lecomte.com.velomap.Model.ItemClusterRendere;
 import lpiem.lecomte.com.velomap.Model.Station;
 
 /**
@@ -101,8 +102,44 @@ public class AsyncStation extends AsyncTask {
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
+        mClusterManager.setRenderer(new ItemClusterRendere(context, mMap,mClusterManager));
+        mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View v = LayoutInflater.from(context).inflate(R.layout.info_windows_marker, null);
+                TextView tvNomStation = (TextView) v.findViewById(R.id.tvNomStation);
+                TextView tvAdressStation = (TextView) v.findViewById(R.id.tvAdresseStation);
+                TextView tvNbPlace = (TextView) v.findViewById(R.id.tvNbPlace);
+                TextView tvNbVelo = (TextView) v.findViewById(R.id.tvNbVelo);
+
+                tvNomStation.setText(listStation.get(Integer.parseInt(marker.getSnippet())).getName());
+                tvAdressStation.setText(listStation.get(Integer.parseInt(marker.getSnippet())).getAdress());
+                tvNbPlace.setText("" + listStation.get(Integer.parseInt(marker.getSnippet())).getAvailableBikeStands());
+                tvNbVelo.setText("" + listStation.get(Integer.parseInt(marker.getSnippet())).getAvailableBikes());
+                return v;
+            }
+        });
+        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<ClusterMarker>() {
+            @Override
+            public boolean onClusterClick(Cluster<ClusterMarker> cluster) {
+
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(cluster.getPosition()));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(mMap.getCameraPosition().zoom+1));
+                return false;
+            }
+        });
+
+
+
+
         mMap.setOnCameraChangeListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
+        mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
 
 
     }
@@ -116,35 +153,14 @@ public class AsyncStation extends AsyncTask {
             createMarker(listStation.get(i), i);
         }
 
-        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker marker) {
 
-                return null;
-            }
-
-            @Override
-            public View getInfoContents(Marker marker) {
-                View v = LayoutInflater.from(context).inflate(R.layout.info_windows_marker, null);
-                TextView tvNomStation = (TextView) v.findViewById(R.id.tvNomStation);
-                TextView tvAdressStation=(TextView)v.findViewById(R.id.tvAdresseStation);
-                TextView tvNbPlace=(TextView)v.findViewById(R.id.tvNbPlace);
-                TextView tvNbVelo=(TextView)v.findViewById(R.id.tvNbVelo);
-
-                tvNomStation.setText(listStation.get(Integer.parseInt(marker.getSnippet())).getName());
-                tvAdressStation.setText(listStation.get(Integer.parseInt(marker.getSnippet())).getAdress());
-                tvNbPlace.setText(""+listStation.get(Integer.parseInt(marker.getSnippet())).getAvailableBikeStands());
-                tvNbVelo.setText(""+listStation.get(Integer.parseInt(marker.getSnippet())).getAvailableBikes());
-                return v;
-            }
-        });
 
 
 
     }
     private void createMarker(Station station,int index){
         LatLng position=new LatLng(station.getLat(),station.getLng());
-        MarkerOptions marker=new MarkerOptions()
+        final MarkerOptions marker=new MarkerOptions()
                 .title(station.getName())
                 .snippet("" + index)
                 .position(position);
@@ -162,9 +178,15 @@ public class AsyncStation extends AsyncTask {
             }
         }
 
-        //mMap.addMarker(marker);
-        ClusterMarker test = new ClusterMarker(station.getLat(), station.getLng());
+
+
+
+        ClusterMarker test = new ClusterMarker(station.getLat(), station.getLng(),marker);
         mClusterManager.addItem(test);
+
+
+
+
     }
 
 
