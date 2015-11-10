@@ -20,9 +20,7 @@ public class ClusterMarker implements ClusterItem {
         return mPosition;
     }
 
-    public LatLng getmPosition() {
-        return mPosition;
-    }
+
 
     public MarkerOptions getMarker() {
         return marker;

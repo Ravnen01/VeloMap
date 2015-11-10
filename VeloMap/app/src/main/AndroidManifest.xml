@@ -3,6 +3,7 @@
     package="lpiem.lecomte.com.velomap" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -42,10 +43,8 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
         </activity>
-        <activity
-            android:name=".test.ActivityNavigation"
-            android:label="@string/title_activity_activity_navigation"
-            android:theme="@style/AppTheme.NoActionBar" >
+        <activity android:name=".NoConnectionActitivy"
+            android:screenOrientation="landscape">
         </activity>
     </application>
 

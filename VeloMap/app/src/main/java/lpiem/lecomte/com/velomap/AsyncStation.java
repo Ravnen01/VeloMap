@@ -181,8 +181,8 @@ public class AsyncStation extends AsyncTask {
 
 
 
-        ClusterMarker test = new ClusterMarker(station.getLat(), station.getLng(),marker);
-        mClusterManager.addItem(test);
+        ClusterMarker clusterMarker = new ClusterMarker(station.getLat(), station.getLng(),marker);
+        mClusterManager.addItem(clusterMarker);
 
 
 

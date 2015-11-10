@@ -1,9 +1,13 @@
 package lpiem.lecomte.com.velomap;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +35,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import lpiem.lecomte.com.velomap.Model.Contract;
 
-public class TestJson extends ActionBarActivity {
+public class TestJson extends AppCompatActivity {
     ArrayList<Contract> listContract;
     private static String apikey="626f84cb00f2d7868af5b65d34317c54c2158acd";
 
@@ -38,7 +43,16 @@ public class TestJson extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_json);
-        new Chargement().execute();
+        if(Connectivity.isConnectedFast(getApplicationContext())) {
+            setTitle("Choisissez votre ville");
+            new Chargement().execute();
+        }else{
+            setTitle("Connexion Impossible");
+            Toast.makeText(getApplicationContext(),"Votre connexion internet est Trop lente",Toast.LENGTH_LONG).show();
+            Intent i=new Intent(getApplicationContext(),NoConnectionActitivy.class);
+            startActivity(i);
+            this.finish();
+        }
 
 
     }
@@ -123,18 +137,28 @@ public class TestJson extends ActionBarActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if(Connectivity.isConnectedFast(getApplicationContext())){
+                        Intent i=new Intent(getApplicationContext(),MapsActivity.class);
+                        Bundle b=new Bundle();
+                        b.putString("contract",listContract.get(position).getName());
+                        i.putExtras(b);
 
-                    Intent i=new Intent(getApplicationContext(),MapsActivity.class);
-                    Bundle b=new Bundle();
-                    b.putString("contract",listContract.get(position).getName());
-                    i.putExtras(b);
+                        startActivity(i);
+                    }else{
+                        setTitle("Connexion Impossible");
+                        Toast.makeText(getApplicationContext(),"Votre connexion internet est Trop lente",Toast.LENGTH_LONG).show();
+                        Intent i=new Intent(getApplicationContext(),NoConnectionActitivy.class);
+                        startActivity(i);
 
-                    startActivity(i);
+                    }
+
+
 
                 }
             });
             
         }
     }
+
 
 }
